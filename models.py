@@ -198,5 +198,9 @@ class Admin(User):
         "type": self.type
     }
 
+  def search_todos(self, page):
+    matching_todos = Todo.query
+    return matching_todos.paginate(page=page, per_page=10)
+
   def __repr__(self):
     return f'<Admin {self.id} : {self.username} - {self.email}>'
