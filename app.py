@@ -124,6 +124,16 @@ def logout_action():
   unset_jwt_cookies(response)
   return response
 
+@app.route('/todo-stats', methods=["GET"])
+@login_required(Admin)
+def todo_stats():
+  return jsonify(current_user.get_todo_stats())
+
+@app.route('/stats')
+@login_required(Admin)
+def stats_page():
+  return render_template('stats.html')
+
 
 # Action Routes
 
@@ -197,8 +207,10 @@ def edit_todo_action(id):
 @login_required(Admin)
 def admin_page():
   page = request.args.get('page', 1, type=int)
-  todos = current_user.search_todos(page)
-  return render_template('admin.html', todos=todos, page=page)
+  q = request.args.get('q', default='', type=str)
+  done = request.args.get('done', default='any', type=str)
+  todos = current_user.search_todos(q, done, page)
+  return render_template('admin.html', todos=todos, q=q, page=page, done=done)
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=81)
